@@ -6,7 +6,6 @@ const Podcast = mongoose.model(
         rss_link: String,
         title: String,
         description: String,
-        // link: String,
         link: { type: String, unique: true},
         image: String,
         author: String
