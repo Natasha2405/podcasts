@@ -6,8 +6,9 @@ const Episode = mongoose.model(
         title: String,
         description: String,
         link: String,
-        guid: { type: String, index: { unique: true } },
-        pubDate: String,
+        // guid: { type: String, index: { unique: true } },
+        guid: String,
+        pubDate: Date,
         url: String,
         podcastId: String
         // _deleted: Boolean
