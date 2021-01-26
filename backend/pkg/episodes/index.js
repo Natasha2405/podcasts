@@ -35,11 +35,6 @@ const getOne = async (id) => {
     return data;
 };
 
-// const getOneByLink = async (link) => {
-//     let data = await Episode.findOne({ link });
-//     return data;
-// };
-
 const update = async (id, epData) => {
     let data = await Episode.updateOne({ _id: id }, epData);
     return data.nModified !== 0;
@@ -55,7 +50,6 @@ module.exports = {
     getAllFromPodcast,
     save,
     getOne,
-    // getOneByLink,
     update,
     remove
 };
