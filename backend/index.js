@@ -14,7 +14,7 @@ api.get('/api/v1/feeds/data', rssfeed.getPodcastsData);
 api.get('/api/v1/feeds/episodes', rssfeed.getEpisodesData);
 
 api.get('/api/v1/podcasts', podcasts.getAll);
-// api.get('/episodes', episodes.getAll);
+// api.get('/api/v1/episodes', episodes.getAll);
 api.get('/api/v1/podcasts/:pid/episodes', episodes.getAllFromPodcast);
 //api.get('/api/v1/podcasts/:pid/episodes/:eid', episodes.getOne);
 
