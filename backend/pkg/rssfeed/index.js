@@ -38,7 +38,7 @@ const getRssFeed = async () => {
         urlElement = linkData[i]
         // console.log(urlElement);
         try {
-            // let data = await fetch('https://www.slobodnaevropa.mk/podcast/?zoneId=441');
+            // let data = await fetch('https://media.rtv.rs/sr_ci/rss/makedonium.xml');
             let data = await fetch(`${urlElement}`);
             xmlData = await data.text();
             // console.log(xmlData);
@@ -80,11 +80,15 @@ const getRssFeed = async () => {
             // return jsonObj;
 
             let channel = {};
-            // if (jsonObj.rss.channel['atom:link']) {
-            //     channel.rss_link = jsonObj.rss.channel['atom:link'].attr['@_href'];
-            // } else {
-            //     channel.rss_link = jsonObj.rss.channel['atom:link'][0].attr['@_href'];
-            // }
+
+            if (jsonObj.rss.channel['atom:link'] === undefined) {
+                channel.rss_link = jsonObj.rss.channel.link
+            }
+            else if (Array.isArray(jsonObj.rss.channel['atom:link'])) {
+                channel.rss_link = jsonObj.rss.channel['atom:link'][0].attr['@_href']
+            } else {
+                channel.rss_link = jsonObj.rss.channel['atom:link'].attr['@_href'];
+            }
             channel.title = jsonObj.rss.channel.title
             if (jsonObj.rss.channel.description) {
                 channel.description = jsonObj.rss.channel.description
@@ -106,10 +110,9 @@ const getRssFeed = async () => {
             } else if (jsonObj.rss.channel['itunes:author']) {
                 channel.author = jsonObj.rss.channel['itunes:author'];
             }
-
             // console.log(channel);
             await podModel.save(channel);
-
+            
         } catch (err) {
             console.log(err);
         }
@@ -174,6 +177,11 @@ const saveEpisodes = async () => {
             // console.log(jsonObj);
             // return jsonObj;
 
+            let allEpFromPod = await epModel.getAllFromPodcast(podcastsData[i]._id);
+            // let firstEpisodeDate = allEpFromPod[allEpFromPod.length - 1].pubDate;
+            let lastEpisodeDate = allEpFromPod[0].pubDate;
+            // console.log(lastEpisodeDate);
+
             let episode = {};
             if (Array.isArray(jsonObj.rss.channel.item)) {
                 jsonObj.rss.channel.item.forEach(ep => {
@@ -197,8 +205,13 @@ const saveEpisodes = async () => {
                         episode.url = 'Link is not available';
                     }
                     episode.podcastId = podcastsData[i]._id;
-                    epModel.save(episode);
+                    // epModel.save(episode);
                     // console.log(episode);
+                    if (lastEpisodeDate < ep.pubDate) {
+                        epModel.save(episode);
+                    } else {
+                        console.log('No new episodes');
+                    }
                 });
             } else {
                 episode.title = jsonObj.rss.channel.item.title;
@@ -220,8 +233,13 @@ const saveEpisodes = async () => {
                     episode.url = 'Link is not available';
                 }
                 episode.podcastId = podcastsData[i]._id;
-                epModel.save(episode);
+                // epModel.save(episode);
                 // console.log(episode);
+                if (lastEpisodeDate < jsonObj.rss.channel.item.pubDate) {
+                    epModel.save(episode);
+                } else {
+                    console.log('No new episodes');
+                }
             }
         } catch (err) {
             console.log(err);
