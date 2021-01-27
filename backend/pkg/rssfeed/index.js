@@ -80,7 +80,6 @@ const getRssFeed = async () => {
             // return jsonObj;
 
             let channel = {};
-
             if (jsonObj.rss.channel['atom:link'] === undefined) {
                 channel.rss_link = jsonObj.rss.channel.link
             }
@@ -112,7 +111,7 @@ const getRssFeed = async () => {
             }
             // console.log(channel);
             await podModel.save(channel);
-            
+
         } catch (err) {
             console.log(err);
         }
@@ -178,7 +177,6 @@ const saveEpisodes = async () => {
             // return jsonObj;
 
             let allEpFromPod = await epModel.getAllFromPodcast(podcastsData[i]._id);
-            // let firstEpisodeDate = allEpFromPod[allEpFromPod.length - 1].pubDate;
             let lastEpisodeDate = allEpFromPod[0].pubDate;
             // console.log(lastEpisodeDate);
 
