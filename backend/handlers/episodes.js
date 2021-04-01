@@ -1,4 +1,5 @@
 const episodesModel = require('../pkg/episodes');
+// const episodeValidator = require('../pkg/episodes/validator');
 
 const getAll = async (req, res) => {
     try {
@@ -23,10 +24,31 @@ const getAllFromPodcast = async (req, res) => {
     }
 };
 
-const save = async (req, res) => {
+// const save = async (req, res) => {
+//     try {
+//         let ep = await episodesModel.save(data);
+//         return res.status(201).send(ep);
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).send('Internal Server Error');
+//     }
+// };
+
+const saveEpisode = async (req, res) => {
     try {
-        let ep = await episodesModel.save(data);
-        return res.status(201).send(ep);
+        await episodeValidator.validate(req.body, episodeValidator.episodeSchema);
+    } catch (err) {
+        console.log(err);
+        return res.status(400).send('Bad Content');
+    }
+
+    // default values
+    req.body._deleted = false;
+    req.body._created = new Date().toISOString();
+
+    try {
+        let episode = await episodeModel.create(req.body);
+        return res.status(201).send(episode);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -75,7 +97,7 @@ const remove = async (req, res) => {
 module.exports = {
     getAll,
     getAllFromPodcast,
-    save,
+    saveEpisode,
     getOne,
     update,
     remove
